@@ -363,19 +363,16 @@ function loadWatchNext() {
   var box = document.getElementById("cw"); box.innerHTML = "";
   var list = [];
   try { list = JSON.parse(Android.getWatchNext()); } catch (e) {}
+  // Only what you were watching on Netflix. If the TV doesn't share it, hide the whole row.
+  list = list.filter(function (it) { return it.pkg === "com.netflix.ninja"; });
+  var show = list.length > 0;
+  document.getElementById("secCW").style.display = show ? "flex" : "none";
+  box.style.display = show ? "flex" : "none";
   list.slice(0, 5).forEach(function (it) {
     var sub = (it.season ? "S" + it.season + " " : "") + (it.episode ? "E" + it.episode : "");
     if (it.dur > 0) sub += (sub ? "  ·  " : "") + Math.max(1, Math.round((it.dur - it.pos) / 60000)) + " min left";
     box.appendChild(makeCard(it.poster, "linear-gradient(#445, #112)", it.title, sub,
-      it.dur > 0 ? 100 * it.pos / it.dur : null, "wn:" + it.index, it.pkg ? Android.getIcon(it.pkg) : ""));
-  });
-  if (list.length >= 5) return;
-  // Not enough real items: fill with the main apps, using each app's own TV banner picture.
-  MAIN_APPS.forEach(function (m) {
-    if (box.children.length >= 5 || !m.installed) return;
-    var banner = ""; try { banner = Android.getBanner(m.installed); } catch (e) {}
-    box.appendChild(makeCard(banner, "linear-gradient(" + m.color[0] + "," + m.color[1] + ")", m.label, CW_SUB[m.label] || "Open app",
-      null, "app:" + m.installed, banner ? "" : Android.getIcon(m.installed)));
+      it.dur > 0 ? 100 * it.pos / it.dur : null, "wn:" + it.index, Android.getIcon(it.pkg)));
   });
 }
 
