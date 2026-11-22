@@ -1,0 +1,49 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.jay.appnew'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.jay.appnew'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+
+    signingConfigs {
+        appnew {
+            storeFile file('appnew.jks')
+            storePassword 'appnew123'
+            keyAlias 'appnew'
+            keyPassword 'appnew123'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.appnew
+        }
+        debug {
+            signingConfig signingConfigs.appnew
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    androidResources {
+        noCompress 'mp4'
+    }
+}

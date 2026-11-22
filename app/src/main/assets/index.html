@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, initial-scale=1">
+<title>แอปNEW</title>
+<style>
+  /* ===== ตั้งค่าที่แก้เองได้ ===== */
+  :root { --gold: #e7c79a; --glass: rgba(255,255,255,.16); --line: rgba(255,255,255,.38); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+  body { font-family: "Noto Sans Thai", "Sarabun", "Roboto", sans-serif; color: #fff; }
+  #stage { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; overflow: hidden; }
+  #bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  #shade { position: absolute; inset: 0;
+    background:
+      linear-gradient(to bottom, rgba(25,17,12,.30) 0%, rgba(25,17,12,.18) 50%, rgba(25,17,12,.55) 72%, rgba(25,17,12,.85) 100%),
+      linear-gradient(to right, rgba(25,17,12,.45) 0%, rgba(25,17,12,0) 38%); }
+  .ts { text-shadow: 0 3px 12px rgba(0,8,25,.6); }
+  .glass { background: var(--glass); border: 2px solid var(--line); border-radius: 22px;
+           backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+
+  #greet { position: absolute; left: 110px; top: 72px; font: 500 24px Roboto, sans-serif; letter-spacing: 1px; }
+  #clock { position: absolute; left: 98px; top: 112px; font: 700 190px/192px Roboto, sans-serif; letter-spacing: -4px; }
+  #date { position: absolute; left: 110px; top: 528px; font-size: 26px; opacity: .95; }
+  #divider { position: absolute; left: 560px; top: 90px; width: 2px; height: 430px; background: rgba(255,255,255,.45); }
+
+  #wx { position: absolute; left: 600px; top: 60px; width: 520px; }
+  #wxNow { display: flex; align-items: center; gap: 20px; height: 140px; }
+  #wxIcon svg { width: 130px; height: 130px; }
+  #wxTemp { font: 400 96px Roboto, sans-serif; }
+  #wxPlace { font-size: 32px; font-weight: 700; margin-top: 6px; }
+  #wxDesc { font-size: 24px; opacity: .92; margin-top: 2px; }
+  #wxHours { display: flex; gap: 6px; margin-top: 14px; }
+  .hr { width: 64px; text-align: center; }
+  .hr .t { font: 400 17px Roboto, sans-serif; opacity: .85; }
+  .hr svg { width: 46px; height: 46px; margin: 2px auto 0; display: block; }
+  .hr .v { font: 500 21px Roboto, sans-serif; }
+  .hr .p { font: 500 15px Roboto, sans-serif; color: #9fd0ff; }
+  #pm { margin-top: 16px; height: 95px; display: flex; align-items: center; padding: 0 26px; gap: 30px; }
+  #pm .lab { font: 400 20px Roboto, sans-serif; opacity: .85; }
+  #pm .num { font: 700 40px Roboto, sans-serif; }
+  #pm .num small { font-size: 18px; font-weight: 400; opacity: .85; margin-left: 6px; }
+  #pmBadge { display: inline-block; min-width: 200px; text-align: center; padding: 4px 16px; border-radius: 16px; font-size: 20px; font-weight: 700; color: #3c2800; background: #f7c843; }
+  #pmBar { height: 8px; width: 200px; margin-top: 10px; border-radius: 4px; background: linear-gradient(to right, #3cc85a, #f7c843, #e64040); position: relative; }
+  #pmDot { position: absolute; top: -5px; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 3px solid #333; transform: translateX(-9px); }
+  #pmWhere { font-size: 20px; }
+  #pmWhere small { display: block; font-size: 17px; opacity: .8; }
+
+  #sys { position: absolute; right: 100px; top: 60px; width: 580px; height: 120px; display: flex; padding: 22px 28px; gap: 30px; }
+  .st { flex: 1; }
+  .st .k { font: 400 20px Roboto, sans-serif; opacity: .85; }
+  .st .val { font: 700 30px Roboto, sans-serif; margin-top: 2px; white-space: nowrap; }
+  .st .val small { font-size: 16px; font-weight: 400; opacity: .8; margin-left: 6px; }
+  .st .bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,.75); margin-top: 10px; overflow: hidden; }
+  .st .bar i { display: block; height: 100%; width: 0; border-radius: 4px; transition: width .6s; }
+  #pills { position: absolute; right: 100px; top: 210px; display: flex; gap: 20px; }
+  .pill { width: 180px; height: 60px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; }
+  #hint { position: absolute; right: 100px; top: 300px; font-size: 20px; padding: 8px 18px; border-radius: 18px; display: none; }
+
+  .sec { position: absolute; left: 110px; font-size: 30px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+  #secCW { top: 588px; } #secApps { top: 858px; }
+  #cw { position: absolute; left: 110px; top: 650px; display: flex; gap: 25px; }
+  .card { width: 320px; height: 180px; border-radius: 16px; position: relative; overflow: hidden;
+          border: 2px solid rgba(255,255,255,.3); box-shadow: 0 10px 24px rgba(0,5,20,.55); background-size: cover; background-position: center; }
+  .card .ov { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.82), rgba(0,0,0,0) 60%); }
+  .card .src { position: absolute; left: 14px; top: 12px; width: 40px; height: 40px; border-radius: 10px; background-size: cover; }
+  .card .ti { position: absolute; left: 18px; right: 18px; bottom: 36px; font-size: 27px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .su { position: absolute; left: 18px; right: 18px; bottom: 16px; font-size: 19px; opacity: .9; white-space: nowrap; overflow: hidden; }
+  .card .pr { position: absolute; left: 18px; right: 18px; bottom: 8px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.35); }
+  .card .pr i { display: block; height: 100%; border-radius: 3px; background: #3c8cff; }
+
+  #apps { position: absolute; left: 116px; top: 905px; display: flex; gap: 112px; }
+  .app { width: 118px; text-align: center; }
+  .app .ic { width: 118px; height: 118px; border-radius: 50%; overflow: hidden; background: #222 center/cover no-repeat;
+             box-shadow: 0 10px 20px rgba(0,5,20,.6); border: 2px solid rgba(255,255,255,.25); display: flex; align-items: center; justify-content: center; }
+  .app .nm { margin-top: 14px; font: 500 26px Roboto, "Noto Sans Thai", sans-serif; white-space: nowrap; }
+  .grid9 { display: grid; grid-template-columns: repeat(3, 14px); gap: 6px; }
+  .grid9 i { width: 14px; height: 14px; border-radius: 3px; background: #fff; }
+  .sec .grid9 { grid-template-columns: repeat(3, 7px); gap: 3px; } .sec .grid9 i { width: 7px; height: 7px; border-radius: 2px; }
+
+  /* focus (ตัวที่เลือกอยู่) */
+  .f { transition: transform .18s ease, box-shadow .18s ease; }
+  .f.on { transform: scale(1.08); }
+  .app.on .ic { border: 5px solid #fff; box-shadow: 0 0 34px 8px rgba(255,255,255,.55); }
+  .card.on, .pill.on, #hint.on { border-color: #fff !important; border-width: 4px; box-shadow: 0 0 30px 6px rgba(255,255,255,.45); }
+  .pill.on { background: rgba(255,255,255,.32); }
+
+  /* More apps */
+  #folderBack { position: absolute; inset: 0; background: rgba(0,0,0,.6); display: none; }
+  #folder { position: absolute; left: 360px; top: 230px; width: 1200px; min-height: 560px; border-radius: 36px; padding: 40px 60px;
+            background: linear-gradient(rgba(70,55,45,.96), rgba(30,22,18,.96)); box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+  #folder h2 { font: 600 42px Roboto, sans-serif; margin-bottom: 30px; }
+  #folderGrid { display: grid; grid-template-columns: repeat(6, 150px); gap: 40px 34px; justify-content: start; padding: 14px; }
+  #folderGrid .app { width: 150px; } #folderGrid .app .ic { width: 130px; height: 130px; margin: 0 auto; }
+  #folderGrid .app .nm { font-size: 22px; overflow: hidden; text-overflow: ellipsis; }
+  #folder .foot { text-align: center; margin-top: 30px; font-size: 22px; opacity: .8; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <video id="bg" src="bg.mp4" poster="poster.jpg" autoplay muted loop playsinline></video>
+  <div id="shade"></div>
+
+  <div id="greet" class="ts">GOOD EVENING</div>
+  <div id="clock" class="ts">00<br>00</div>
+  <div id="date" class="ts"></div>
+  <div id="hint" class="glass f" data-act="a11y">กดตรงนี้ ให้ปุ่ม Home กลับมาหน้านี้</div>
+  <div id="divider"></div>
+
+  <div id="wx" class="ts">
+    <div id="wxNow"><div id="wxIcon"></div><div id="wxTemp">--°</div></div>
+    <div id="wxPlace">กรุงเทพมหานคร</div>
+    <div id="wxDesc">กำลังโหลดพยากรณ์อากาศ</div>
+    <div id="wxHours"></div>
+    <div id="pm" class="glass">
+      <div><div class="lab">PM2.5</div><div class="num"><span id="pmNum">--</span><small>µg/m³</small></div></div>
+      <div><span id="pmBadge">--</span><div id="pmBar"><div id="pmDot" style="left:0"></div></div></div>
+      <div id="pmWhere">กรุงเทพฯ<small id="pmTime">--</small></div>
+    </div>
+  </div>
+
+  <div id="sys" class="glass ts">
+    <div class="st"><div class="k">CPU</div><div class="val" id="cpuV">--</div><div class="bar"><i id="cpuB" style="background:#3c8cff"></i></div></div>
+    <div class="st"><div class="k">RAM</div><div class="val" id="ramV">--</div><div class="bar"><i id="ramB" style="background:#2ecc8f"></i></div></div>
+    <div class="st"><div class="k">พื้นที่</div><div class="val" id="stV">--</div><div class="bar"><i id="stB" style="background:#9a6cff"></i></div></div>
+  </div>
+  <div id="pills">
+    <div class="pill glass f ts" data-act="inputs">แหล่งสัญญาณ</div>
+    <div class="pill glass f ts" data-act="wifi">Wi-Fi</div>
+    <div class="pill glass f ts" data-act="settings">ตั้งค่า</div>
+  </div>
+
+  <div id="secCW" class="sec ts">
+    <svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="11.5" fill="none" stroke="#fff" stroke-width="3"/><path d="M14 7v7h6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>ดูต่อ
+  </div>
+  <div id="cw"></div>
+
+  <div id="secApps" class="sec ts"><div class="grid9"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>แอปของฉัน</div>
+  <div id="apps"></div>
+
+  <div id="folderBack">
+    <div id="folder">
+      <h2>More apps</h2>
+      <div id="folderGrid"></div>
+      <div class="foot">กดปุ่มย้อนกลับเพื่อปิด</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== ตั้งค่าที่แก้เองได้ ===== */
+var PLACE = { lat: 13.7563, lon: 100.5018, name: "กรุงเทพมหานคร", pmName: "กรุงเทพฯ" };
+var MAIN_APPS = [
+  { pkg: ["com.netflix.ninja"], label: "Netflix" },
+  { pkg: ["com.google.android.youtube.tv", "com.google.android.youtube.tvunplugged"], label: "YouTube" },
+  { pkg: ["com.disney.disneyplus"], label: "Disney+" },
+  { pkg: ["com.amazon.amazonvideo.livingroom"], label: "Prime Video" },
+  { pkg: ["com.wbd.stream", "com.hbo.hbonow", "com.hbo.go"], label: "HBO Max" },
+  { pkg: ["com.iqiyi.i18n.tv", "com.iqiyi.i18n"], label: "iQIYI" }
+];
+
+/* ===== ใช้ทดสอบในเบราว์เซอร์ (บนทีวีจะใช้ของจริง) ===== */
+if (!window.Android) {
+  window.Android = {
+    getApps: function () { return JSON.stringify([{pkg:"com.spotify.tv.android",label:"Spotify",icon:""},{pkg:"x.files",label:"Files",icon:""},{pkg:"com.android.vending",label:"Play Store",icon:""}]); },
+    isInstalled: function () { return true; }, getIcon: function () { return ""; },
+    launch: function (p) { console.log("launch", p); }, openSettings: function () {}, openWifi: function () {}, openInputs: function () {},
+    openOriginal: function () { console.log("original"); }, isHomeWatcherOn: function () { return false; }, openAccessibility: function () {},
+    getStats: function () { return JSON.stringify({cpu: 14, ramUsed: 1.9e9, ramTotal: 3e9, storUsed: 3.2e9, storTotal: 5.5e9}); },
+    requestWeather: function () { setTimeout(function () { onWeather(null); }, 50); },
+    getWatchNext: function () { return "[]"; }, openWatchNext: function () {}
+  };
+}
+
+/* ---------- scale 1920x1080 to the screen ---------- */
+function fit() {
+  var s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+  var st = document.getElementById("stage");
+  st.style.transform = "scale(" + s + ")";
+  st.style.left = ((window.innerWidth - 1920 * s) / 2) + "px";
+  st.style.top = ((window.innerHeight - 1080 * s) / 2) + "px";
+}
+window.addEventListener("resize", fit); fit();
+
+/* ---------- clock ---------- */
+var TH_DAYS = ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"];
+var TH_MONTHS = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+function pad(n) { return (n < 10 ? "0" : "") + n; }
+function tick() {
+  var d = new Date(), h = d.getHours();
+  document.getElementById("clock").innerHTML = pad(h) + "<br>" + pad(d.getMinutes());
+  document.getElementById("greet").textContent = h < 5 ? "GOOD NIGHT" : h < 12 ? "GOOD MORNING" : h < 17 ? "GOOD AFTERNOON" : h < 22 ? "GOOD EVENING" : "GOOD NIGHT";
+  document.getElementById("date").textContent = "วัน" + TH_DAYS[d.getDay()] + "ที่ " + d.getDate() + " " + TH_MONTHS[d.getMonth()] + " " + (d.getFullYear() + 543);
+}
+setInterval(tick, 1000); tick();
+
+/* ---------- weather icons ---------- */
+function cloudPath(c) { return '<g fill="' + c + '"><circle cx="34" cy="58" r="17"/><circle cx="52" cy="46" r="22"/><circle cx="72" cy="56" r="17"/><rect x="18" y="56" width="70" height="20" rx="10"/></g>'; }
+function drops(n, len) {
+  var s = ""; for (var i = 0; i < n; i++) { var x = 30 + i * (46 / Math.max(1, n - 1)); var y = 82 + (i % 2) * 6;
+    s += '<line x1="' + x + '" y1="' + y + '" x2="' + (x - 5) + '" y2="' + (y + len) + '" stroke="#6eb9ff" stroke-width="4" stroke-linecap="round"/>'; }
+  return s;
+}
+function icon(kind, day) {
+  var sun = '<circle cx="66" cy="38" r="20" fill="#ffcd5a"/>';
+  var moon = '<circle cx="66" cy="38" r="20" fill="#f3e3a6"/><circle cx="78" cy="30" r="17" fill="#1d2a48"/>';
+  var body = "";
+  if (kind === "clear") body = day ? '<circle cx="52" cy="52" r="26" fill="#ffcd5a"/>' : '<circle cx="52" cy="52" r="26" fill="#f3e3a6"/><circle cx="66" cy="42" r="22" fill="#1d2a48"/>';
+  else if (kind === "partly") body = (day ? sun : moon) + cloudPath("#eef2f8");
+  else if (kind === "cloud" || kind === "fog") body = cloudPath("#dfe6f0");
+  else if (kind === "drizzle") body = cloudPath("#e6ecf5") + drops(3, 10);
+  else if (kind === "rain") body = cloudPath("#b4c0d2") + drops(5, 16);
+  else if (kind === "storm") body = cloudPath("#9aa7bb") + drops(4, 14) + '<path d="M56 70 L44 92 L54 92 L48 110 L68 84 L58 84 L64 70Z" fill="#ffd246"/>';
+  return '<svg viewBox="0 0 104 116">' + body + '</svg>';
+}
+function kindOf(code) {
+  if (code === 0) return "clear";
+  if (code <= 2) return "partly";
+  if (code === 3) return "cloud";
+  if (code === 45 || code === 48) return "fog";
+  if (code >= 51 && code <= 57) return "drizzle";
+  if ((code >= 61 && code <= 67) || (code >= 80 && code <= 82)) return "rain";
+  if (code >= 95) return "storm";
+  return "cloud";
+}
+var KIND_TH = { clear: "ท้องฟ้าแจ่มใส", partly: "มีเมฆบางส่วน", cloud: "เมฆมาก", fog: "มีหมอก", drizzle: "ฝนตกปรอยๆ", rain: "ฝนตก", storm: "ฝนฟ้าคะนอง" };
+
+function onWeather(raw) {
+  if (!raw) { document.getElementById("wxDesc").textContent = "ยังโหลดอากาศไม่ได้ (เช็กอินเทอร์เน็ต)"; return; }
+  var data = JSON.parse(raw), w = data.weather, a = data.air || {};
+  var cur = w.current || {}, H = w.hourly || {};
+  var now = new Date(), start = 0;
+  for (var i = 0; i < (H.time || []).length; i++) { if (new Date(H.time[i]) >= new Date(now.getTime() - 3600e3)) { start = i; break; } }
+  var nextProb = 0;
+  for (var j = start; j < start + 6 && j < H.time.length; j++) nextProb = Math.max(nextProb, H.precipitation_probability[j] || 0);
+  var k = kindOf(cur.weather_code);
+  if ((k === "cloud" || k === "partly") && nextProb >= 60) k = "rain";
+  document.getElementById("wxIcon").innerHTML = icon(k, cur.is_day);
+  document.getElementById("wxTemp").textContent = Math.round(cur.temperature_2m) + "°";
+  document.getElementById("wxPlace").textContent = PLACE.name;
+  document.getElementById("wxDesc").textContent = KIND_TH[k] + (nextProb ? " * โอกาสฝน " + nextProb + "%" : "");
+  var html = "";
+  for (var n = 0; n < 7; n++) {
+    var idx = start + n * 3; if (idx >= H.time.length) break;
+    var t = new Date(H.time[idx]);
+    html += '<div class="hr"><div class="t">' + pad(t.getHours()) + ':00</div>' + icon(kindOf(H.weather_code[idx]), H.is_day[idx]) +
+            '<div class="v">' + Math.round(H.temperature_2m[idx]) + '°</div><div class="p">' + (H.precipitation_probability[idx] || 0) + '%</div></div>';
+  }
+  document.getElementById("wxHours").innerHTML = html;
+  var pm = a.current && a.current.pm2_5;
+  if (pm != null) {
+    var lv = pm <= 15 ? ["ดีมาก", "#3cc8f0", "#04324a"] : pm <= 25 ? ["ดี", "#3cc85a", "#0b3b14"] : pm <= 37.5 ? ["ปานกลาง", "#f7c843", "#3c2800"] :
+             pm <= 75 ? ["เริ่มมีผลต่อสุขภาพ", "#f59a3c", "#3c1a00"] : ["มีผลต่อสุขภาพ", "#e64040", "#fff"];
+    document.getElementById("pmNum").textContent = Math.round(pm);
+    var b = document.getElementById("pmBadge"); b.textContent = lv[0]; b.style.background = lv[1]; b.style.color = lv[2];
+    document.getElementById("pmDot").style.left = Math.min(200, pm / 100 * 200) + "px";
+    document.getElementById("pmTime").textContent = "อัปเดต " + pad(now.getHours()) + ":" + pad(now.getMinutes());
+  }
+  document.getElementById("pmWhere").firstChild.textContent = PLACE.pmName;
+}
+function loadWeather() { try { Android.requestWeather(PLACE.lat, PLACE.lon); } catch (e) {} }
+
+/* ---------- system stats ---------- */
+function gb(x) { return (x / 1073741824).toFixed(1) + "GB"; }
+function loadStats() {
+  try {
+    var s = JSON.parse(Android.getStats());
+    document.getElementById("cpuV").textContent = s.cpu >= 0 ? s.cpu + "%" : "--";
+    document.getElementById("cpuB").style.width = Math.max(0, s.cpu) + "%";
+    document.getElementById("ramV").innerHTML = gb(s.ramUsed) + "<small>จาก " + Math.round(s.ramTotal / 1073741824) + "GB</small>";
+    document.getElementById("ramB").style.width = (100 * s.ramUsed / s.ramTotal) + "%";
+    document.getElementById("stV").innerHTML = gb(s.storUsed) + "<small>จาก " + gb(s.storTotal) + "</small>";
+    document.getElementById("stB").style.width = (100 * s.storUsed / s.storTotal) + "%";
+  } catch (e) {}
+}
+
+/* ---------- apps ---------- */
+var allApps = [], mainPkgs = [];
+function appTile(label, iconUrl, act, extra) {
+  var d = document.createElement("div");
+  d.className = "app f"; d.dataset.act = act;
+  var ic = document.createElement("div"); ic.className = "ic";
+  if (iconUrl) ic.style.backgroundImage = "url('" + iconUrl + "')";
+  else if (extra) ic.innerHTML = extra;
+  else { ic.textContent = label.charAt(0); ic.style.font = "700 54px Roboto"; ic.style.background = "linear-gradient(#556, #223)"; }
+  var nm = document.createElement("div"); nm.className = "nm ts"; nm.textContent = label;
+  d.appendChild(ic); d.appendChild(nm);
+  return d;
+}
+var GRID_SVG = '<div class="grid9"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
+var BACK_SVG = '<svg width="56" height="56" viewBox="0 0 56 56"><path d="M44 28a16 16 0 1 1-6-12.5" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M40 6 L42 20 L28 19Z" fill="#fff"/></svg>';
+
+function loadApps() {
+  try { allApps = JSON.parse(Android.getApps()); } catch (e) { allApps = []; }
+  var row = document.getElementById("apps"); row.innerHTML = ""; mainPkgs = [];
+  MAIN_APPS.forEach(function (m) {
+    var p = m.pkg.filter(function (x) { return Android.isInstalled(x); })[0];
+    if (!p) return;
+    mainPkgs.push(p);
+    row.appendChild(appTile(m.label, Android.getIcon(p), "app:" + p));
+  });
+  var more = appTile("More apps", "", "more", GRID_SVG);
+  more.querySelector(".ic").style.background = "rgba(255,255,255,.22)";
+  row.appendChild(more);
+  // folder
+  var g = document.getElementById("folderGrid"); g.innerHTML = "";
+  allApps.filter(function (a) { return mainPkgs.indexOf(a.pkg) < 0; })
+         .sort(function (a, b) { return (b.tv ? 1 : 0) - (a.tv ? 1 : 0) || a.label.localeCompare(b.label); })
+         .slice(0, 17)
+         .forEach(function (a) { g.appendChild(appTile(a.label, a.icon, "app:" + a.pkg)); });
+  var back = appTile("หน้าจอเดิม", "", "original", BACK_SVG);
+  back.querySelector(".ic").style.background = "rgba(255,255,255,.22)";
+  g.appendChild(back);
+}
+
+/* ---------- continue watching ---------- */
+var CW_FALLBACK = [
+  { label: "Netflix", pk: 0, title: "Netflix", sub: "ดูต่อจากที่ค้างไว้", c: ["#5a1a1e", "#120607"] },
+  { label: "YouTube", pk: 1, title: "YouTube", sub: "วิดีโอแนะนำสำหรับคุณ", c: ["#7a1818", "#1a0606"] },
+  { label: "Disney+", pk: 2, title: "Disney+", sub: "หนังและซีรีส์", c: ["#1c3c8c", "#08143a"] },
+  { label: "Prime Video", pk: 3, title: "Prime Video", sub: "ดูต่อ", c: ["#0b6cc0", "#032a52"] },
+  { label: "iQIYI", pk: 5, title: "iQIYI", sub: "ซีรีส์เอเชีย", c: ["#11934a", "#03341a"] }
+];
+function loadWatchNext() {
+  var box = document.getElementById("cw"); box.innerHTML = "";
+  var list = [];
+  try { list = JSON.parse(Android.getWatchNext()); } catch (e) {}
+  if (list.length) {
+    list.slice(0, 5).forEach(function (it) {
+      var c = document.createElement("div"); c.className = "card f"; c.dataset.act = "wn:" + it.index;
+      if (it.poster) c.style.backgroundImage = "url('" + it.poster + "')"; else c.style.background = "linear-gradient(#445, #112)";
+      var sub = (it.season ? "S" + it.season + " " : "") + (it.episode ? "ตอนที่ " + it.episode : "");
+      if (it.dur > 0) sub += (sub ? " * " : "") + "เหลือ " + Math.max(1, Math.round((it.dur - it.pos) / 60000)) + " นาที";
+      c.innerHTML = '<div class="ov"></div>' + (it.pkg ? '<div class="src" style="background-image:url(\'' + Android.getIcon(it.pkg) + '\')"></div>' : "") +
+        '<div class="ti"></div><div class="su"></div>' + (it.dur > 0 ? '<div class="pr"><i style="width:' + (100 * it.pos / it.dur) + '%"></i></div>' : "");
+      c.querySelector(".ti").textContent = it.title; c.querySelector(".su").textContent = sub;
+      box.appendChild(c);
+    });
+    return;
+  }
+  CW_FALLBACK.forEach(function (fb) {
+    var m = MAIN_APPS[fb.pk], p = m.pkg.filter(function (x) { return Android.isInstalled(x); })[0];
+    if (!p || box.children.length >= 5) return;
+    var c = document.createElement("div"); c.className = "card f"; c.dataset.act = "app:" + p;
+    c.style.background = "linear-gradient(" + fb.c[0] + ", " + fb.c[1] + ")";
+    c.innerHTML = '<div class="ov"></div><div class="src" style="background-image:url(\'' + Android.getIcon(p) + '\')"></div><div class="ti"></div><div class="su"></div>';
+    c.querySelector(".ti").textContent = fb.title; c.querySelector(".su").textContent = fb.sub;
+    box.appendChild(c);
+  });
+}
+
+/* ---------- remote control (D-pad) ---------- */
+var cur = null, folderOpen = false;
+function items() {
+  var scope = folderOpen ? document.getElementById("folder") : document.getElementById("stage");
+  return Array.prototype.filter.call(scope.querySelectorAll(".f"), function (e) {
+    if (!folderOpen && e.closest("#folderBack")) return false;
+    return e.offsetParent !== null || e.id === "hint" && e.style.display === "block";
+  });
+}
+function setFocus(e) {
+  if (cur) cur.classList.remove("on");
+  cur = e; if (cur) cur.classList.add("on");
+}
+function rect(e) { var r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, l: r.left, r: r.right, t: r.top, b: r.bottom }; }
+function move(dir) {
+  var list = items(); if (!list.length) return;
+  if (!cur || list.indexOf(cur) < 0) { setFocus(list[0]); return; }
+  var a = rect(cur), best = null, bestScore = 1e9;
+  list.forEach(function (e) {
+    if (e === cur) return;
+    var b = rect(e), dx = b.x - a.x, dy = b.y - a.y, main, side;
+    var vOver = b.t < a.b && b.b > a.t, hOver = b.l < a.r && b.r > a.l;
+    if (dir === "L") { if (b.r > a.l + 5 || !vOver) return; main = -dx; side = Math.abs(dy); }
+    if (dir === "R") { if (b.l < a.r - 5 || !vOver) return; main = dx; side = Math.abs(dy); }
+    if (dir === "U") { if (b.b > a.t + 5) return; main = -dy; side = hOver ? Math.abs(dx) * 0.3 : Math.abs(dx); }
+    if (dir === "D") { if (b.t < a.b - 5) return; main = dy; side = hOver ? Math.abs(dx) * 0.3 : Math.abs(dx); }
+    var score = main + side * 2.2;
+    if (score < bestScore) { bestScore = score; best = e; }
+  });
+  if (best) setFocus(best);
+}
+function activate(e) {
+  if (!e) return;
+  var act = e.dataset.act || "";
+  if (act.indexOf("app:") === 0) Android.launch(act.slice(4));
+  else if (act.indexOf("wn:") === 0) Android.openWatchNext(parseInt(act.slice(3), 10));
+  else if (act === "more") openFolder();
+  else if (act === "original") { closeFolder(); Android.openOriginal(); }
+  else if (act === "settings") Android.openSettings();
+  else if (act === "wifi") Android.openWifi();
+  else if (act === "inputs") Android.openInputs();
+  else if (act === "a11y") Android.openAccessibility();
+}
+var lastMain = null;
+function openFolder() { lastMain = cur; folderOpen = true; document.getElementById("folderBack").style.display = "block"; setFocus(items()[0]); }
+function closeFolder() { if (!folderOpen) return; folderOpen = false; document.getElementById("folderBack").style.display = "none"; setFocus(lastMain); }
+window.onBackKey = function () { closeFolder(); };
+document.addEventListener("keydown", function (ev) {
+  var k = ev.key || "", code = ev.keyCode;
+  if (k === "ArrowLeft" || code === 37) move("L");
+  else if (k === "ArrowRight" || code === 39) move("R");
+  else if (k === "ArrowUp" || code === 38) move("U");
+  else if (k === "ArrowDown" || code === 40) move("D");
+  else if (k === "Enter" || code === 13 || code === 23) activate(cur);
+  else if (k === "Escape" || k === "Backspace") closeFolder();
+  else return;
+  ev.preventDefault();
+});
+document.addEventListener("click", function (ev) { var e = ev.target.closest(".f"); if (e) { setFocus(e); activate(e); } });
+
+/* ---------- start / refresh ---------- */
+function refreshAll() {
+  loadApps(); loadWatchNext(); loadStats();
+  var hint = document.getElementById("hint");
+  var on = true; try { on = Android.isHomeWatcherOn(); } catch (e) {}
+  hint.style.display = on ? "none" : "block";
+  if (!folderOpen) { var first = document.querySelector("#apps .app"); if (!cur || !document.body.contains(cur)) setFocus(first); }
+}
+window.onAppResume = function () {
+  refreshAll();
+  var v = document.getElementById("bg"); if (v.paused) v.play().catch(function () {});
+};
+window.onAppPause = function () { document.getElementById("bg").pause(); };
+refreshAll();
+setFocus(document.querySelector("#apps .app"));
+loadWeather();
+setInterval(loadStats, 3000);
+setInterval(loadWeather, 30 * 60 * 1000);
+setInterval(loadWatchNext, 5 * 60 * 1000);
+</script>
+</body>
+</html>

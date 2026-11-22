@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">แอปNEW</string>
+    <string name="service_name">แอปNEW หน้าโฮม</string>
+    <string name="service_desc">ใช้ตรวจว่ากดปุ่ม Home แล้วพากลับมาหน้าจอ แอปNEW แทนหน้าจอเดิม ไม่ได้อ่านหรือเก็บข้อความใดๆ</string>
+</resources>
