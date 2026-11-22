@@ -52,6 +52,16 @@
                 android:resource="@xml/home_watcher" />
         </service>
 
+        <service
+            android:name=".MediaWatcher"
+            android:exported="true"
+            android:label="@string/watch_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
         <receiver
             android:name=".Updater$InstallReceiver"
             android:exported="false" />

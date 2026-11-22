@@ -184,6 +184,62 @@ public class Bridge {
         }
     }
 
+    // ---------- Continue watching from what you played (needs Notification access) ----------
+
+    @JavascriptInterface
+    public boolean isWatchAccessOn() {
+        String list = Settings.Secure.getString(act.getContentResolver(), "enabled_notification_listeners");
+        return list != null && list.contains(act.getPackageName() + "/");
+    }
+
+    @JavascriptInterface
+    public void openWatchAccess() {
+        act.runOnUiThread(() -> {
+            Intent[] tries = {
+                    new Intent("android.settings.NOTIFICATION_LISTENER_DETAIL_SETTINGS")
+                            .putExtra("android.provider.extra.NOTIFICATION_LISTENER_COMPONENT_NAME",
+                                    new ComponentName(act, MediaWatcher.class).flattenToString()),
+                    new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"),
+                    new Intent().setComponent(new ComponentName("com.android.tv.settings",
+                            "com.android.tv.settings.device.apps.specialaccess.NotificationAccessActivity")),
+                    new Intent().setComponent(new ComponentName("com.android.tv.settings",
+                            "com.android.tv.settings.device.apps.specialaccess.SpecialAppAccessActivity")),
+                    new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + act.getPackageName()))
+            };
+            for (Intent i : tries) if (tryStart(i)) return;
+            js("window.onUpdate && window.onUpdate('Notification access screen not found on this TV')");
+        });
+    }
+
+    /** Titles you watched recently, newest first, with picture as a data URL. */
+    @JavascriptInterface
+    public String getHistory() {
+        JSONArray in = MediaWatcher.load(act), out = new JSONArray();
+        for (int i = 0; i < in.length(); i++) {
+            try {
+                JSONObject o = in.getJSONObject(i);
+                long pos = o.optLong("pos"), dur = o.optLong("dur");
+                if (dur > 0 && pos > dur * 0.96) continue; // finished
+                File f = new File(act.getFilesDir(), "art_" + o.optString("id") + ".jpg");
+                String img = "";
+                if (f.exists()) {
+                    byte[] b = java.nio.file.Files.readAllBytes(f.toPath());
+                    img = "data:image/jpeg;base64," + Base64.encodeToString(b, Base64.NO_WRAP);
+                } else if (o.optString("artUri").startsWith("http")) {
+                    img = o.optString("artUri");
+                }
+                o.put("img", img);
+                out.put(o);
+            } catch (Exception ignored) { }
+        }
+        return out.toString();
+    }
+
+    @JavascriptInterface
+    public void forget(String key) {
+        MediaWatcher.remove(act, key);
+    }
+
     /** Opens the Play Store page so a missing app can be installed. */
     @JavascriptInterface
     public void openStore(String pkg) {

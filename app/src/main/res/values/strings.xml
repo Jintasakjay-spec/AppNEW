@@ -3,4 +3,5 @@
     <string name="app_name">แอปNEW</string>
     <string name="service_name">แอปNEW หน้าโฮม</string>
     <string name="service_desc">ใช้ตรวจว่ากดปุ่ม Home แล้วพากลับมาหน้าจอ แอปNEW แทนหน้าจอเดิม ไม่ได้อ่านหรือเก็บข้อความใดๆ</string>
+    <string name="watch_name">แอปNEW Continue watching</string>
 </resources>

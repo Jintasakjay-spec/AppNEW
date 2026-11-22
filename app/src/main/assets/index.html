@@ -14,8 +14,8 @@
   #bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   #shade { position: absolute; inset: 0;
     background:
-      linear-gradient(to bottom, rgba(25,17,12,.30) 0%, rgba(25,17,12,.18) 50%, rgba(25,17,12,.55) 72%, rgba(25,17,12,.85) 100%),
-      linear-gradient(to right, rgba(25,17,12,.45) 0%, rgba(25,17,12,0) 38%); }
+      linear-gradient(to bottom, rgba(6,14,30,.30) 0%, rgba(6,14,30,.18) 50%, rgba(6,14,30,.55) 72%, rgba(6,14,30,.85) 100%),
+      linear-gradient(to right, rgba(6,14,30,.45) 0%, rgba(6,14,30,0) 38%); }
   .ts { text-shadow: 0 3px 12px rgba(0,8,25,.6); }
   .glass { background: var(--glass); border: 2px solid var(--line); border-radius: 22px;
            backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
@@ -106,7 +106,7 @@
   /* More apps */
   #folderBack { position: absolute; inset: 0; background: rgba(0,0,0,.6); display: none; }
   #folder { position: absolute; left: 360px; top: 230px; width: 1200px; min-height: 560px; border-radius: 36px; padding: 40px 60px;
-            background: linear-gradient(rgba(70,55,45,.96), rgba(30,22,18,.96)); box-shadow: 0 20px 60px rgba(0,0,0,.6); }
+            background: linear-gradient(rgba(28,48,78,.96), rgba(8,16,32,.96)); box-shadow: 0 20px 60px rgba(0,0,0,.6); }
   #folder h2 { font: 600 42px Roboto, sans-serif; margin-bottom: 30px; }
   #folderGrid { display: grid; grid-template-columns: repeat(6, 150px); gap: 40px 34px; justify-content: start; padding: 14px; }
   #folderGrid .app { width: 150px; } #folderGrid .app .ic { width: 130px; height: 130px; margin: 0 auto; }
@@ -188,7 +188,11 @@ if (!window.Android) {
     openOriginal: function () { console.log("original"); }, isHomeWatcherOn: function () { return false; }, openAccessibility: function () {},
     getStats: function () { return JSON.stringify({cpu: 14, ramUsed: 1.9e9, ramTotal: 3e9, storUsed: 3.2e9, storTotal: 5.5e9}); },
     requestWeather: function () { setTimeout(function () { onWeather(null); }, 50); },
-    getWatchNext: function () { return "[]"; }, getBanner: function () { return ""; }, updateApp: function () { onUpdate("Downloading update 40%"); }, version: function () { return "1.5"; }, openStore: function (p) { console.log("store", p); }, openWatchNext: function () {}
+    getWatchNext: function () { return "[]"; }, getBanner: function () { return ""; }, isWatchAccessOn: function () { return true; }, openWatchAccess: function () {},
+    getHistory: function () { return JSON.stringify([
+      {title:"Solo Leveling",sub:"S1 E7",pos:600000,dur:1440000,pkg:"com.netflix.ninja",img:""},
+      {title:"The Last of Us",sub:"S1 E3",pos:1500000,dur:3420000,pkg:"com.netflix.ninja",img:""},
+      {title:"Wednesday",sub:"S2 E4",pos:900000,dur:2700000,pkg:"com.netflix.ninja",img:""}]); }, updateApp: function () { onUpdate("Downloading update 40%"); }, version: function () { return "1.5"; }, openStore: function (p) { console.log("store", p); }, openWatchNext: function () {}
   };
 }
 
@@ -359,21 +363,28 @@ function makeCard(img, bg, title, sub, prog, act, srcIcon) {
   c.querySelector(".ti").textContent = title; c.querySelector(".su").textContent = sub;
   return c;
 }
+var NICE = { "com.netflix.ninja": "Netflix" };
 function loadWatchNext() {
   var box = document.getElementById("cw"); box.innerHTML = "";
-  var list = [];
-  try { list = JSON.parse(Android.getWatchNext()); } catch (e) {}
-  // Only what you were watching on Netflix. If the TV doesn't share it, hide the whole row.
-  list = list.filter(function (it) { return it.pkg === "com.netflix.ninja"; });
-  var show = list.length > 0;
-  document.getElementById("secCW").style.display = show ? "flex" : "none";
-  box.style.display = show ? "flex" : "none";
-  list.slice(0, 5).forEach(function (it) {
-    var sub = (it.season ? "S" + it.season + " " : "") + (it.episode ? "E" + it.episode : "");
-    if (it.dur > 0) sub += (sub ? "  ·  " : "") + Math.max(1, Math.round((it.dur - it.pos) / 60000)) + " min left";
-    box.appendChild(makeCard(it.poster, "linear-gradient(#445, #112)", it.title, sub,
-      it.dur > 0 ? 100 * it.pos / it.dur : null, "wn:" + it.index, Android.getIcon(it.pkg)));
+  var items = [];
+  try { items = JSON.parse(Android.getHistory()); } catch (e) {}
+  var access = true; try { access = Android.isWatchAccessOn(); } catch (e) {}
+  items.slice(0, 5).forEach(function (it) {
+    var parts = [];
+    if (it.sub) parts.push(it.sub);
+    if (it.dur > 0 && it.pos > 0) parts.push(Math.max(1, Math.round((it.dur - it.pos) / 60000)) + " min left");
+    box.appendChild(makeCard(it.img, "linear-gradient(#24324a, #0b1220)", it.title, parts.join("  ·  "),
+      it.dur > 0 && it.pos > 0 ? Math.min(100, 100 * it.pos / it.dur) : 8, "app:" + it.pkg, it.img ? "" : Android.getIcon(it.pkg)));
   });
+  if (!items.length) {
+    var nf = (MAIN_APPS[0].installed || "com.netflix.ninja");
+    if (!access) box.appendChild(makeCard("", "linear-gradient(#24324a, #0b1220)", "Show what I'm watching",
+      "Press here, turn on แอปNEW Continue watching", null, "watchaccess", ""));
+    else box.appendChild(makeCard("", "linear-gradient(#5a1a1e, #120607)", "Nothing yet",
+      "Watch something on Netflix, it will show up here", null, "app:" + nf, Android.getIcon(nf)));
+  }
+  document.getElementById("secCW").style.display = "flex";
+  box.style.display = "flex";
 }
 
 /* ---------- remote control (D-pad) ---------- */
@@ -414,6 +425,7 @@ function activate(e) {
   else if (act.indexOf("wn:") === 0) Android.openWatchNext(parseInt(act.slice(3), 10));
   else if (act.indexOf("store:") === 0) Android.openStore(act.slice(6));
   else if (act === "more") openFolder();
+  else if (act === "watchaccess") Android.openWatchAccess();
   else if (act === "update") { Android.updateApp(); }
   else if (act === "original") { closeFolder(); Android.openOriginal(); }
   else if (act === "settings") Android.openSettings();
@@ -500,7 +512,7 @@ function makePigeon(delay) {
   }
   setTimeout(cycle, delay);
 }
-makePigeon(1500); makePigeon(9000); makePigeon(17000);
+/* pigeons off for the night theme: makePigeon(1500); */
 
 /* ---------- start / refresh ---------- */
 function refreshAll() {
