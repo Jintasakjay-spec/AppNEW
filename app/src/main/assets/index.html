@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=1920, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>แอปNEW</title>
 <style>
   /* ===== ตั้งค่าที่แก้เองได้ ===== */
@@ -204,9 +204,9 @@ function drops(n, len) {
 }
 function icon(kind, day) {
   var sun = '<circle cx="66" cy="38" r="20" fill="#ffcd5a"/>';
-  var moon = '<circle cx="66" cy="38" r="20" fill="#f3e3a6"/><circle cx="78" cy="30" r="17" fill="#1d2a48"/>';
+  var moon = '<mask id="mk1"><rect width="104" height="116" fill="#fff"/><circle cx="78" cy="30" r="17" fill="#000"/></mask><circle cx="66" cy="38" r="20" fill="#f3e3a6" mask="url(#mk1)"/>';
   var body = "";
-  if (kind === "clear") body = day ? '<circle cx="52" cy="52" r="26" fill="#ffcd5a"/>' : '<circle cx="52" cy="52" r="26" fill="#f3e3a6"/><circle cx="66" cy="42" r="22" fill="#1d2a48"/>';
+  if (kind === "clear") body = day ? '<circle cx="52" cy="52" r="26" fill="#ffcd5a"/>' : '<mask id="mk2"><rect width="104" height="116" fill="#fff"/><circle cx="68" cy="40" r="22" fill="#000"/></mask><circle cx="52" cy="52" r="26" fill="#f3e3a6" mask="url(#mk2)"/>';
   else if (kind === "partly") body = (day ? sun : moon) + cloudPath("#eef2f8");
   else if (kind === "cloud" || kind === "fog") body = cloudPath("#dfe6f0");
   else if (kind === "drizzle") body = cloudPath("#e6ecf5") + drops(3, 10);

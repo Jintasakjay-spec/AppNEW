@@ -22,6 +22,7 @@ public class MainActivity extends Activity {
 
         web = new WebView(this);
         web.setBackgroundColor(Color.BLACK);
+        web.setInitialScale(0);
         web.setFocusable(true);
         web.setFocusableInTouchMode(true);
         web.setVerticalScrollBarEnabled(false);
@@ -33,8 +34,8 @@ public class MainActivity extends Activity {
         s.setDomStorageEnabled(true);
         s.setMediaPlaybackRequiresUserGesture(false);
         s.setAllowFileAccess(true);
-        s.setLoadWithOverviewMode(true);
-        s.setUseWideViewPort(true);
+        s.setLoadWithOverviewMode(false);
+        s.setUseWideViewPort(false);
         s.setTextZoom(100);
 
         bridge = new Bridge(this, web);
