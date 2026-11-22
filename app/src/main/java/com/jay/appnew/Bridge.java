@@ -140,6 +140,38 @@ public class Bridge {
         return b;
     }
 
+    /** The app's wide TV banner picture (like a poster), or "" if it has none. */
+    @JavascriptInterface
+    public String getBanner(String pkg) {
+        try {
+            PackageManager pm = act.getPackageManager();
+            Drawable d = null;
+            Intent li = pm.getLeanbackLaunchIntentForPackage(pkg);
+            if (li != null) d = pm.getActivityBanner(li);
+            if (d == null) d = pm.getApplicationBanner(pkg);
+            if (d == null) return "";
+            int w = d.getIntrinsicWidth() > 0 ? d.getIntrinsicWidth() : 320;
+            int h = d.getIntrinsicHeight() > 0 ? d.getIntrinsicHeight() : 180;
+            float k = 640f / w;
+            Bitmap b = toBitmap(d, 640, Math.max(1, Math.round(h * k)));
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            b.compress(Bitmap.CompressFormat.PNG, 100, bos);
+            return "data:image/png;base64," + Base64.encodeToString(bos.toByteArray(), Base64.NO_WRAP);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /** Opens the Play Store page so a missing app can be installed. */
+    @JavascriptInterface
+    public void openStore(String pkg) {
+        act.runOnUiThread(() -> {
+            if (!tryStart(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + pkg)))) {
+                tryStart(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + pkg)));
+            }
+        });
+    }
+
     @JavascriptInterface
     public void launch(String pkg) {
         act.runOnUiThread(() -> {

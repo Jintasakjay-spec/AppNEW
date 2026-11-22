@@ -55,18 +55,18 @@
   .st .bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,.75); margin-top: 10px; overflow: hidden; }
   .st .bar i { display: block; height: 100%; width: 0; border-radius: 4px; transition: width .6s; }
   #pills { position: absolute; right: 100px; top: 210px; display: flex; gap: 20px; }
-  .pill { width: 180px; height: 60px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; }
+  .pill { width: 180px; font-family: Roboto, sans-serif; height: 60px; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; }
   #hint { position: absolute; right: 100px; top: 300px; font-size: 20px; padding: 8px 18px; border-radius: 18px; display: none; }
 
-  .sec { position: absolute; left: 110px; font-size: 30px; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+  .sec { position: absolute; left: 110px; font: 700 30px Roboto, "Noto Sans Thai", sans-serif; display: flex; align-items: center; gap: 12px; }
   #secCW { top: 588px; } #secApps { top: 858px; }
   #cw { position: absolute; left: 110px; top: 650px; display: flex; gap: 25px; }
   .card { width: 320px; height: 180px; border-radius: 16px; position: relative; overflow: hidden;
           border: 2px solid rgba(255,255,255,.3); box-shadow: 0 10px 24px rgba(0,5,20,.55); background-size: cover; background-position: center; }
   .card .ov { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.82), rgba(0,0,0,0) 60%); }
   .card .src { position: absolute; left: 14px; top: 12px; width: 40px; height: 40px; border-radius: 10px; background-size: cover; }
-  .card .ti { position: absolute; left: 18px; right: 18px; bottom: 36px; font-size: 27px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .card .su { position: absolute; left: 18px; right: 18px; bottom: 16px; font-size: 19px; opacity: .9; white-space: nowrap; overflow: hidden; }
+  .card .ti { position: absolute; left: 18px; right: 18px; bottom: 40px; font: 700 26px Roboto, "Noto Sans Thai", sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .su { position: absolute; left: 18px; right: 18px; bottom: 18px; font: 400 18px Roboto, "Noto Sans Thai", sans-serif; opacity: .9; white-space: nowrap; overflow: hidden; }
   .card .pr { position: absolute; left: 18px; right: 18px; bottom: 8px; height: 5px; border-radius: 3px; background: rgba(255,255,255,.35); }
   .card .pr i { display: block; height: 100%; border-radius: 3px; background: #3c8cff; }
 
@@ -105,7 +105,7 @@
   <div id="greet" class="ts">GOOD EVENING</div>
   <div id="clock" class="ts">00<br>00</div>
   <div id="date" class="ts"></div>
-  <div id="hint" class="glass f" data-act="a11y">กดตรงนี้ ให้ปุ่ม Home กลับมาหน้านี้</div>
+  <div id="hint" class="glass f" data-act="a11y">Press here so Home comes back to this screen</div>
   <div id="divider"></div>
 
   <div id="wx" class="ts">
@@ -123,27 +123,27 @@
   <div id="sys" class="glass ts">
     <div class="st"><div class="k">CPU</div><div class="val" id="cpuV">--</div><div class="bar"><i id="cpuB" style="background:#3c8cff"></i></div></div>
     <div class="st"><div class="k">RAM</div><div class="val" id="ramV">--</div><div class="bar"><i id="ramB" style="background:#2ecc8f"></i></div></div>
-    <div class="st"><div class="k">พื้นที่</div><div class="val" id="stV">--</div><div class="bar"><i id="stB" style="background:#9a6cff"></i></div></div>
+    <div class="st"><div class="k">Storage</div><div class="val" id="stV">--</div><div class="bar"><i id="stB" style="background:#9a6cff"></i></div></div>
   </div>
   <div id="pills">
-    <div class="pill glass f ts" data-act="inputs">แหล่งสัญญาณ</div>
+    <div class="pill glass f ts" data-act="inputs">Inputs</div>
     <div class="pill glass f ts" data-act="wifi">Wi-Fi</div>
-    <div class="pill glass f ts" data-act="settings">ตั้งค่า</div>
+    <div class="pill glass f ts" data-act="settings">Settings</div>
   </div>
 
   <div id="secCW" class="sec ts">
-    <svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="11.5" fill="none" stroke="#fff" stroke-width="3"/><path d="M14 7v7h6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>ดูต่อ
+    <svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="11.5" fill="none" stroke="#fff" stroke-width="3"/><path d="M14 7v7h6" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>Continue watching
   </div>
   <div id="cw"></div>
 
-  <div id="secApps" class="sec ts"><div class="grid9"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>แอปของฉัน</div>
+  <div id="secApps" class="sec ts"><div class="grid9"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>My apps</div>
   <div id="apps"></div>
 
   <div id="folderBack">
     <div id="folder">
       <h2>More apps</h2>
       <div id="folderGrid"></div>
-      <div class="foot">กดปุ่มย้อนกลับเพื่อปิด</div>
+      <div class="foot">Press Back to close</div>
     </div>
   </div>
 </div>
@@ -152,12 +152,12 @@
 /* ===== ตั้งค่าที่แก้เองได้ ===== */
 var PLACE = { lat: 13.7563, lon: 100.5018, name: "กรุงเทพมหานคร", pmName: "กรุงเทพฯ" };
 var MAIN_APPS = [
-  { pkg: ["com.netflix.ninja"], label: "Netflix" },
-  { pkg: ["com.google.android.youtube.tv", "com.google.android.youtube.tvunplugged"], label: "YouTube" },
-  { pkg: ["com.disney.disneyplus"], label: "Disney+" },
-  { pkg: ["com.amazon.amazonvideo.livingroom"], label: "Prime Video" },
-  { pkg: ["com.wbd.stream", "com.hbo.hbonow", "com.hbo.go"], label: "HBO Max" },
-  { pkg: ["com.iqiyi.i18n.tv", "com.iqiyi.i18n"], label: "iQIYI" }
+  { pkg: ["com.netflix.ninja"], match: /netflix/i, label: "Netflix", color: ["#2a2a2e", "#0a0a0c"], txt: "N", fg: "#e50914" },
+  { pkg: ["com.google.android.youtube.tv", "com.google.android.youtube.tvunplugged"], match: /^youtube$/i, label: "YouTube", color: ["#fff", "#e8e8ec"], txt: "\u25B6", fg: "#e00" },
+  { pkg: ["in.startv.hotstar.dplus.tv", "com.disney.disneyplus", "in.startv.hotstar.dplus"], match: /disney/i, label: "Disney+", color: ["#1d3c96", "#081446"], txt: "D+", fg: "#fff" },
+  { pkg: ["com.wbd.stream", "com.hbo.asia.androidtv", "com.hbo.hbonow", "com.hbo.go"], match: /hbo|^max$/i, label: "HBO Max", color: ["#5f1ebe", "#230055"], txt: "max", fg: "#fff" },
+  { pkg: ["com.amazon.amazonvideo.livingroom"], match: /prime video/i, label: "Prime Video", color: ["#28a0f5", "#005abe"], txt: "prime", fg: "#fff" },
+  { pkg: ["com.iqiyi.i18n.tv", "com.iqiyi.i18n"], match: /iqiyi/i, label: "iQIYI", color: ["#28dc6e", "#009641"], txt: "iQ", fg: "#fff" }
 ];
 
 /* ===== ใช้ทดสอบในเบราว์เซอร์ (บนทีวีจะใช้ของจริง) ===== */
@@ -169,7 +169,7 @@ if (!window.Android) {
     openOriginal: function () { console.log("original"); }, isHomeWatcherOn: function () { return false; }, openAccessibility: function () {},
     getStats: function () { return JSON.stringify({cpu: 14, ramUsed: 1.9e9, ramTotal: 3e9, storUsed: 3.2e9, storTotal: 5.5e9}); },
     requestWeather: function () { setTimeout(function () { onWeather(null); }, 50); },
-    getWatchNext: function () { return "[]"; }, openWatchNext: function () {}
+    getWatchNext: function () { return "[]"; }, getBanner: function () { return ""; }, openStore: function (p) { console.log("store", p); }, openWatchNext: function () {}
   };
 }
 
@@ -268,9 +268,9 @@ function loadStats() {
     var s = JSON.parse(Android.getStats());
     document.getElementById("cpuV").textContent = s.cpu >= 0 ? s.cpu + "%" : "--";
     document.getElementById("cpuB").style.width = Math.max(0, s.cpu) + "%";
-    document.getElementById("ramV").innerHTML = gb(s.ramUsed) + "<small>จาก " + Math.round(s.ramTotal / 1073741824) + "GB</small>";
+    document.getElementById("ramV").innerHTML = gb(s.ramUsed) + "<small>/ " + Math.round(s.ramTotal / 1073741824) + "GB</small>";
     document.getElementById("ramB").style.width = (100 * s.ramUsed / s.ramTotal) + "%";
-    document.getElementById("stV").innerHTML = gb(s.storUsed) + "<small>จาก " + gb(s.storTotal) + "</small>";
+    document.getElementById("stV").innerHTML = gb(s.storUsed) + "<small>/ " + gb(s.storTotal) + "</small>";
     document.getElementById("stB").style.width = (100 * s.storUsed / s.storTotal) + "%";
   } catch (e) {}
 }
@@ -291,14 +291,26 @@ function appTile(label, iconUrl, act, extra) {
 var GRID_SVG = '<div class="grid9"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
 var BACK_SVG = '<svg width="56" height="56" viewBox="0 0 56 56"><path d="M44 28a16 16 0 1 1-6-12.5" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/><path d="M40 6 L42 20 L28 19Z" fill="#fff"/></svg>';
 
+/* Finds the installed package for a main app (by package name, then by app name). */
+function resolve(m) {
+  var p = m.pkg.filter(function (x) { return Android.isInstalled(x); })[0];
+  if (p) return p;
+  var hit = allApps.filter(function (a) { return m.match.test(a.label); })[0];
+  return hit ? hit.pkg : null;
+}
+function brandIcon(m) {
+  var size = m.txt.length <= 2 ? 52 : 30;
+  return '<div style="width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(' +
+         m.color[0] + ',' + m.color[1] + ');color:' + m.fg + ';font:900 ' + size + 'px Roboto,sans-serif">' + m.txt + '</div>';
+}
+
 function loadApps() {
   try { allApps = JSON.parse(Android.getApps()); } catch (e) { allApps = []; }
   var row = document.getElementById("apps"); row.innerHTML = ""; mainPkgs = [];
   MAIN_APPS.forEach(function (m) {
-    var p = m.pkg.filter(function (x) { return Android.isInstalled(x); })[0];
-    if (!p) return;
-    mainPkgs.push(p);
-    row.appendChild(appTile(m.label, Android.getIcon(p), "app:" + p));
+    var p = resolve(m);
+    if (p) { mainPkgs.push(p); m.installed = p; row.appendChild(appTile(m.label, Android.getIcon(p), "app:" + p)); }
+    else { m.installed = null; row.appendChild(appTile(m.label, "", "store:" + m.pkg[0], brandIcon(m))); }
   });
   var more = appTile("More apps", "", "more", GRID_SVG);
   more.querySelector(".ic").style.background = "rgba(255,255,255,.22)";
@@ -309,44 +321,39 @@ function loadApps() {
          .sort(function (a, b) { return (b.tv ? 1 : 0) - (a.tv ? 1 : 0) || a.label.localeCompare(b.label); })
          .slice(0, 17)
          .forEach(function (a) { g.appendChild(appTile(a.label, a.icon, "app:" + a.pkg)); });
-  var back = appTile("หน้าจอเดิม", "", "original", BACK_SVG);
+  var back = appTile("Original Home", "", "original", BACK_SVG);
   back.querySelector(".ic").style.background = "rgba(255,255,255,.22)";
   g.appendChild(back);
 }
 
 /* ---------- continue watching ---------- */
-var CW_FALLBACK = [
-  { label: "Netflix", pk: 0, title: "Netflix", sub: "ดูต่อจากที่ค้างไว้", c: ["#5a1a1e", "#120607"] },
-  { label: "YouTube", pk: 1, title: "YouTube", sub: "วิดีโอแนะนำสำหรับคุณ", c: ["#7a1818", "#1a0606"] },
-  { label: "Disney+", pk: 2, title: "Disney+", sub: "หนังและซีรีส์", c: ["#1c3c8c", "#08143a"] },
-  { label: "Prime Video", pk: 3, title: "Prime Video", sub: "ดูต่อ", c: ["#0b6cc0", "#032a52"] },
-  { label: "iQIYI", pk: 5, title: "iQIYI", sub: "ซีรีส์เอเชีย", c: ["#11934a", "#03341a"] }
-];
+var CW_SUB = { "Netflix": "Continue watching", "YouTube": "Recommended for you", "Disney+": "Movies and series",
+               "HBO Max": "Movies and series", "Prime Video": "Continue watching", "iQIYI": "Asian series" };
+function makeCard(img, bg, title, sub, prog, act, srcIcon) {
+  var c = document.createElement("div"); c.className = "card f"; c.dataset.act = act;
+  if (img) { c.style.backgroundImage = "url('" + img + "')"; c.style.backgroundColor = "#111"; } else c.style.background = bg;
+  c.innerHTML = '<div class="ov"></div>' + (srcIcon ? '<div class="src" style="background-image:url(\'' + srcIcon + '\')"></div>' : "") +
+    '<div class="ti"></div><div class="su"></div>' + (prog != null ? '<div class="pr"><i style="width:' + prog + '%"></i></div>' : "");
+  c.querySelector(".ti").textContent = title; c.querySelector(".su").textContent = sub;
+  return c;
+}
 function loadWatchNext() {
   var box = document.getElementById("cw"); box.innerHTML = "";
   var list = [];
   try { list = JSON.parse(Android.getWatchNext()); } catch (e) {}
-  if (list.length) {
-    list.slice(0, 5).forEach(function (it) {
-      var c = document.createElement("div"); c.className = "card f"; c.dataset.act = "wn:" + it.index;
-      if (it.poster) c.style.backgroundImage = "url('" + it.poster + "')"; else c.style.background = "linear-gradient(#445, #112)";
-      var sub = (it.season ? "S" + it.season + " " : "") + (it.episode ? "ตอนที่ " + it.episode : "");
-      if (it.dur > 0) sub += (sub ? " * " : "") + "เหลือ " + Math.max(1, Math.round((it.dur - it.pos) / 60000)) + " นาที";
-      c.innerHTML = '<div class="ov"></div>' + (it.pkg ? '<div class="src" style="background-image:url(\'' + Android.getIcon(it.pkg) + '\')"></div>' : "") +
-        '<div class="ti"></div><div class="su"></div>' + (it.dur > 0 ? '<div class="pr"><i style="width:' + (100 * it.pos / it.dur) + '%"></i></div>' : "");
-      c.querySelector(".ti").textContent = it.title; c.querySelector(".su").textContent = sub;
-      box.appendChild(c);
-    });
-    return;
-  }
-  CW_FALLBACK.forEach(function (fb) {
-    var m = MAIN_APPS[fb.pk], p = m.pkg.filter(function (x) { return Android.isInstalled(x); })[0];
-    if (!p || box.children.length >= 5) return;
-    var c = document.createElement("div"); c.className = "card f"; c.dataset.act = "app:" + p;
-    c.style.background = "linear-gradient(" + fb.c[0] + ", " + fb.c[1] + ")";
-    c.innerHTML = '<div class="ov"></div><div class="src" style="background-image:url(\'' + Android.getIcon(p) + '\')"></div><div class="ti"></div><div class="su"></div>';
-    c.querySelector(".ti").textContent = fb.title; c.querySelector(".su").textContent = fb.sub;
-    box.appendChild(c);
+  list.slice(0, 5).forEach(function (it) {
+    var sub = (it.season ? "S" + it.season + " " : "") + (it.episode ? "E" + it.episode : "");
+    if (it.dur > 0) sub += (sub ? "  ·  " : "") + Math.max(1, Math.round((it.dur - it.pos) / 60000)) + " min left";
+    box.appendChild(makeCard(it.poster, "linear-gradient(#445, #112)", it.title, sub,
+      it.dur > 0 ? 100 * it.pos / it.dur : null, "wn:" + it.index, it.pkg ? Android.getIcon(it.pkg) : ""));
+  });
+  if (list.length >= 5) return;
+  // Not enough real items: fill with the main apps, using each app's own TV banner picture.
+  MAIN_APPS.forEach(function (m) {
+    if (box.children.length >= 5 || !m.installed) return;
+    var banner = ""; try { banner = Android.getBanner(m.installed); } catch (e) {}
+    box.appendChild(makeCard(banner, "linear-gradient(" + m.color[0] + "," + m.color[1] + ")", m.label, CW_SUB[m.label] || "Open app",
+      null, "app:" + m.installed, banner ? "" : Android.getIcon(m.installed)));
   });
 }
 
@@ -386,6 +393,7 @@ function activate(e) {
   var act = e.dataset.act || "";
   if (act.indexOf("app:") === 0) Android.launch(act.slice(4));
   else if (act.indexOf("wn:") === 0) Android.openWatchNext(parseInt(act.slice(3), 10));
+  else if (act.indexOf("store:") === 0) Android.openStore(act.slice(6));
   else if (act === "more") openFolder();
   else if (act === "original") { closeFolder(); Android.openOriginal(); }
   else if (act === "settings") Android.openSettings();

@@ -1,6 +1,7 @@
 package com.jay.appnew;
 
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -46,6 +47,13 @@ public class MainActivity extends Activity {
 
         setContentView(web);
         hideSystemUi();
+        // Ask once to read the TV's "Continue watching" list (some TVs allow it, some don't).
+        try {
+            String perm = "com.android.providers.tv.permission.READ_EPG_DATA";
+            if (checkSelfPermission(perm) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{perm}, 7);
+            }
+        } catch (Exception ignored) { }
         web.requestFocus();
     }
 
@@ -87,6 +95,12 @@ public class MainActivity extends Activity {
             return true;
         }
         return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (web != null) web.evaluateJavascript("window.onAppResume && window.onAppResume()", null);
     }
 
     @Override
