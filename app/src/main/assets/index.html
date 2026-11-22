@@ -139,11 +139,12 @@
   <div id="secApps" class="sec ts"><div class="grid9"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>My apps</div>
   <div id="apps"></div>
 
+  <div id="toast" class="glass ts" style="position:absolute;left:50%;top:40px;transform:translateX(-50%);padding:14px 30px;font:500 26px Roboto,sans-serif;display:none;z-index:9"></div>
   <div id="folderBack">
     <div id="folder">
       <h2>More apps</h2>
       <div id="folderGrid"></div>
-      <div class="foot">Press Back to close</div>
+      <div class="foot">Press Back to close<span id="ver"></span></div>
     </div>
   </div>
 </div>
@@ -169,7 +170,7 @@ if (!window.Android) {
     openOriginal: function () { console.log("original"); }, isHomeWatcherOn: function () { return false; }, openAccessibility: function () {},
     getStats: function () { return JSON.stringify({cpu: 14, ramUsed: 1.9e9, ramTotal: 3e9, storUsed: 3.2e9, storTotal: 5.5e9}); },
     requestWeather: function () { setTimeout(function () { onWeather(null); }, 50); },
-    getWatchNext: function () { return "[]"; }, getBanner: function () { return ""; }, openStore: function (p) { console.log("store", p); }, openWatchNext: function () {}
+    getWatchNext: function () { return "[]"; }, getBanner: function () { return ""; }, updateApp: function () { onUpdate("Downloading update 40%"); }, version: function () { return "1.5"; }, openStore: function (p) { console.log("store", p); }, openWatchNext: function () {}
   };
 }
 
@@ -321,6 +322,9 @@ function loadApps() {
          .sort(function (a, b) { return (b.tv ? 1 : 0) - (a.tv ? 1 : 0) || a.label.localeCompare(b.label); })
          .slice(0, 17)
          .forEach(function (a) { g.appendChild(appTile(a.label, a.icon, "app:" + a.pkg)); });
+  var up = appTile("Update app", "", "update", '<svg width="56" height="56" viewBox="0 0 56 56"><path d="M28 8v30M16 26l12 12 12-12" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 46h32" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>');
+  up.querySelector(".ic").style.background = "rgba(80,170,255,.35)";
+  g.appendChild(up);
   var back = appTile("Original Home", "", "original", BACK_SVG);
   back.querySelector(".ic").style.background = "rgba(255,255,255,.22)";
   g.appendChild(back);
@@ -395,6 +399,7 @@ function activate(e) {
   else if (act.indexOf("wn:") === 0) Android.openWatchNext(parseInt(act.slice(3), 10));
   else if (act.indexOf("store:") === 0) Android.openStore(act.slice(6));
   else if (act === "more") openFolder();
+  else if (act === "update") { Android.updateApp(); }
   else if (act === "original") { closeFolder(); Android.openOriginal(); }
   else if (act === "settings") Android.openSettings();
   else if (act === "wifi") Android.openWifi();
@@ -402,9 +407,13 @@ function activate(e) {
   else if (act === "a11y") Android.openAccessibility();
 }
 var lastMain = null;
-function openFolder() { lastMain = cur; folderOpen = true; document.getElementById("folderBack").style.display = "block"; setFocus(items()[0]); }
+function openFolder() { try { var v = Android.version(); if (v) document.getElementById("ver").textContent = "   *   v" + v; } catch (e) {} lastMain = cur; folderOpen = true; document.getElementById("folderBack").style.display = "block"; setFocus(items()[0]); }
 function closeFolder() { if (!folderOpen) return; folderOpen = false; document.getElementById("folderBack").style.display = "none"; setFocus(lastMain); }
 window.onBackKey = function () { closeFolder(); };
+window.onUpdate = function (msg) {
+  var t = document.getElementById("toast"); t.textContent = msg; t.style.display = "block";
+  clearTimeout(window._tt); window._tt = setTimeout(function () { t.style.display = "none"; }, 6000);
+};
 document.addEventListener("keydown", function (ev) {
   var k = ev.key || "", code = ev.keyCode;
   if (k === "ArrowLeft" || code === 37) move("L");

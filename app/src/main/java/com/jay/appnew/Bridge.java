@@ -162,6 +162,28 @@ public class Bridge {
         }
     }
 
+    /** Downloads and installs the newest แอปNEW from GitHub. Progress goes to window.onUpdate(text). */
+    @JavascriptInterface
+    public void updateApp() {
+        act.runOnUiThread(() -> {
+            if (!Updater.ensureAllowed(act)) {
+                js("window.onUpdate && window.onUpdate('Turn on the switch for แอปNEW, then press Update again')");
+                return;
+            }
+            pool.execute(() -> Updater.run(act, msg ->
+                    js("window.onUpdate && window.onUpdate(" + JSONObject.quote(msg) + ")")));
+        });
+    }
+
+    @JavascriptInterface
+    public String version() {
+        try {
+            return act.getPackageManager().getPackageInfo(act.getPackageName(), 0).versionName;
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
     /** Opens the Play Store page so a missing app can be installed. */
     @JavascriptInterface
     public void openStore(String pkg) {
