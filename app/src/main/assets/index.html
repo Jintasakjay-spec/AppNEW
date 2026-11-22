@@ -86,6 +86,23 @@
   .card.on, .pill.on, #hint.on { border-color: #fff !important; border-width: 4px; box-shadow: 0 0 30px 6px rgba(255,255,255,.45); }
   .pill.on { background: rgba(255,255,255,.32); }
 
+
+  /* pigeons */
+  .pg { position: absolute; width: 72px; height: 54px; transform: translate(-50%,-100%); pointer-events: none; z-index: 1;
+        transition-property: left, top; transition-timing-function: cubic-bezier(.35,.1,.3,1); filter: drop-shadow(0 3px 3px rgba(0,0,0,.35)); }
+  .pg svg { width: 100%; height: 100%; overflow: visible; }
+  .pg.left svg { transform: scaleX(-1); }
+  .pg .wu, .pg .wd { display: none; transform-origin: 30px 20px; }
+  .pg.fly .wu, .pg.fly .wd { display: block; }
+  .pg.fly .wu { animation: flapU .22s ease-in-out infinite alternate; }
+  .pg.fly .wd { animation: flapD .22s ease-in-out infinite alternate; }
+  .pg.fly .wf, .pg.fly .legs { display: none; }
+  .pg.sit .head { animation: bob 2.6s ease-in-out infinite; transform-origin: 40px 22px; }
+  .pg.peck .head { animation: peck .5s ease-in-out 2; transform-origin: 40px 22px; }
+  @keyframes flapU { from { transform: scaleY(1); } to { transform: scaleY(-.35); } }
+  @keyframes flapD { from { transform: scaleY(.3); } to { transform: scaleY(-1); } }
+  @keyframes bob { 0%,70%,100% { transform: translate(0,0); } 80% { transform: translate(2px,-1px); } 90% { transform: translate(-1px,0); } }
+  @keyframes peck { 50% { transform: rotate(35deg) translate(3px,4px); } }
   /* More apps */
   #folderBack { position: absolute; inset: 0; background: rgba(0,0,0,.6); display: none; }
   #folder { position: absolute; left: 360px; top: 230px; width: 1200px; min-height: 560px; border-radius: 36px; padding: 40px 60px;
@@ -101,6 +118,7 @@
 <div id="stage">
   <video id="bg" src="bg.mp4" poster="poster.jpg" autoplay muted loop playsinline></video>
   <div id="shade"></div>
+  <div id="birds"></div>
 
   <div id="greet" class="ts">GOOD EVENING</div>
   <div id="clock" class="ts">00<br>00</div>
@@ -426,6 +444,66 @@ document.addEventListener("keydown", function (ev) {
   ev.preventDefault();
 });
 document.addEventListener("click", function (ev) { var e = ev.target.closest(".f"); if (e) { setFocus(e); activate(e); } });
+
+
+/* ---------- pigeons ---------- */
+var PIGEON_SVG = '<svg viewBox="0 0 64 48">' +
+  '<path class="wd" d="M22 22 Q28 40 40 44 Q38 32 34 22Z" fill="#6f7682"/>' +
+  '<path d="M3 24 L16 19 L16 28Z" fill="#5f6570"/><path d="M3 24 L9 22 L9 26Z" fill="#3e434b"/>' +
+  '<ellipse cx="27" cy="25" rx="15" ry="10" fill="#a3a9b3"/>' +
+  '<path class="wf" d="M13 22 Q26 13 38 21 Q27 31 13 25Z" fill="#7f8692"/>' +
+  '<path class="wf" d="M19 23 L33 23 M17 25.5 L30 25.5" stroke="#4b5059" stroke-width="2" stroke-linecap="round"/>' +
+  '<g class="legs" stroke="#e07a7a" stroke-width="2" stroke-linecap="round"><path d="M24 34 L23 41 M29 34 L30 41"/></g>' +
+  '<g class="head"><ellipse cx="38" cy="20" rx="6" ry="6.5" fill="#6aa092"/><ellipse cx="38" cy="22" rx="5" ry="4" fill="#9a6fa8" opacity=".55"/>' +
+  '<circle cx="43" cy="13" r="6.5" fill="#868d99"/><circle cx="45.5" cy="11.5" r="1.6" fill="#ff8a3d"/><circle cx="45.7" cy="11.4" r=".7" fill="#111"/>' +
+  '<path d="M49 12.5 L55 14 L49 15.5Z" fill="#e9cfa8"/><circle cx="49" cy="12.4" r="1.2" fill="#f2f2f2"/></g>' +
+  '<path class="wu" d="M20 21 Q22 2 38 -6 Q38 10 33 21Z" fill="#8a919d"/>' +
+  '<path class="wu" d="M24 15 L34 4 M27 18 L36 9" stroke="#4b5059" stroke-width="2" stroke-linecap="round"/>' +
+  '</svg>';
+/* Where pigeons can land (x, y = feet position on the 1920x1080 screen). Adjust if needed. */
+var PERCHES = [{ x: 1372, y: 490 }, { x: 1478, y: 490 }, { x: 1012, y: 465 }, { x: 1085, y: 465 }, { x: 872, y: 474 }];
+var taken = {};
+function rnd(a, b) { return a + Math.random() * (b - a); }
+function makePigeon(delay) {
+  var el = document.createElement("div"); el.className = "pg"; el.innerHTML = PIGEON_SVG;
+  document.getElementById("birds").appendChild(el);
+  function place(x, y) { el.style.left = x + "px"; el.style.top = y + "px"; }
+  function flyTo(x, y, sec, done) {
+    var from = parseFloat(el.style.left) || 0;
+    el.classList.toggle("left", x < from);
+    el.classList.remove("sit"); el.classList.add("fly");
+    el.style.transitionDuration = sec + "s";
+    requestAnimationFrame(function () { place(x, y); });
+    setTimeout(done, sec * 1000);
+  }
+  function cycle() {
+    var free = PERCHES.map(function (p, i) { return i; }).filter(function (i) { return !taken[i]; });
+    if (!free.length) { setTimeout(cycle, 5000); return; }
+    var i = free[Math.floor(Math.random() * free.length)], p = PERCHES[i]; taken[i] = true;
+    var fromLeft = Math.random() < .5;
+    el.style.transitionDuration = "0s"; el.style.opacity = 1;
+    place(fromLeft ? -80 : 2000, rnd(60, 320));
+    setTimeout(function () {
+      flyTo(p.x, p.y, rnd(4.5, 6.5), function () {
+        el.classList.remove("fly"); el.classList.add("sit");
+        var stay = rnd(25, 70) * 1000, t0 = Date.now();
+        (function pecks() {
+          if (Date.now() - t0 > stay - 3000) return;
+          setTimeout(function () { el.classList.add("peck"); setTimeout(function () { el.classList.remove("peck"); }, 1100); pecks(); }, rnd(5000, 12000));
+        })();
+        if (Math.random() < .5) setTimeout(function () { el.classList.toggle("left"); }, rnd(6000, stay - 4000));
+        setTimeout(function () {
+          var toLeft = Math.random() < .5;
+          flyTo(toLeft ? -100 : 2020, rnd(40, 260), rnd(3.5, 5), function () {
+            taken[i] = false; setTimeout(cycle, rnd(8000, 25000));
+          });
+        }, stay);
+      });
+    }, 50);
+  }
+  setTimeout(cycle, delay);
+}
+makePigeon(1500); makePigeon(9000); makePigeon(17000);
 
 /* ---------- start / refresh ---------- */
 function refreshAll() {
